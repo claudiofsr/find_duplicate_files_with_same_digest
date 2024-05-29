@@ -1,0 +1,64 @@
+
+use builtin;
+use str;
+
+set edit:completion:arg-completer[find-identical-files] = {|@words|
+    fn spaces {|n|
+        builtin:repeat $n ' ' | str:join ''
+    }
+    fn cand {|text desc|
+        edit:complex-candidate $text &display=$text' '(spaces (- 14 (wcswidth $text)))$desc
+    }
+    var command = 'find-identical-files'
+    for word $words[1..-1] {
+        if (str:has-prefix $word '-') {
+            break
+        }
+        set command = $command';'$word
+    }
+    var completions = [
+        &'find-identical-files'= {
+            cand -a 'Choose the hash algorithm'
+            cand --algorithm 'Choose the hash algorithm'
+            cand -b 'Set a minimum file size (in bytes) to search for identical files'
+            cand --min_size 'Set a minimum file size (in bytes) to search for identical files'
+            cand -B 'Set a maximum file size (in bytes) to search for identical files'
+            cand --max_size 'Set a maximum file size (in bytes) to search for identical files'
+            cand -c 'Set the output directory for the CSV file (fif.csv)'
+            cand --csv_dir 'Set the output directory for the CSV file (fif.csv)'
+            cand -d 'Set the minimum depth to search for identical files'
+            cand --min_depth 'Set the minimum depth to search for identical files'
+            cand -D 'Set the maximum depth to search for identical files'
+            cand --max_depth 'Set the maximum depth to search for identical files'
+            cand -f 'Minimum frequency (number of identical files) to be filtered'
+            cand --min_frequency 'Minimum frequency (number of identical files) to be filtered'
+            cand -F 'Maximum frequency (number of identical files) to be filtered'
+            cand --max_frequency 'Maximum frequency (number of identical files) to be filtered'
+            cand -g 'If provided, outputs the completion file for given shell'
+            cand --generate 'If provided, outputs the completion file for given shell'
+            cand -i 'Set the input directory where to search for identical files [default: current directory]'
+            cand --input_dir 'Set the input directory where to search for identical files [default: current directory]'
+            cand -r 'Print the result in the chosen format'
+            cand --result_format 'Print the result in the chosen format'
+            cand -x 'Set the output directory for the XLSX file (fif.xlsx)'
+            cand --xlsx_dir 'Set the output directory for the XLSX file (fif.xlsx)'
+            cand -e 'Prints extended path of identical files, otherwise relative path'
+            cand --extended_path 'Prints extended path of identical files, otherwise relative path'
+            cand -o 'Omit hidden files (starts with ''.''), otherwise search all files'
+            cand --omit_hidden 'Omit hidden files (starts with ''.''), otherwise search all files'
+            cand -s 'Sort result by number of identical files, otherwise sort by file size'
+            cand --sort 'Sort result by number of identical files, otherwise sort by file size'
+            cand -t 'Show total execution time'
+            cand --time 'Show total execution time'
+            cand -v 'Show intermediate runtime messages'
+            cand --verbose 'Show intermediate runtime messages'
+            cand -w 'Wipe (Clear) the terminal screen before listing the identical files'
+            cand --wipe_terminal 'Wipe (Clear) the terminal screen before listing the identical files'
+            cand -h 'Print help (see more with ''--help'')'
+            cand --help 'Print help (see more with ''--help'')'
+            cand -V 'Print version'
+            cand --version 'Print version'
+        }
+    ]
+    $completions[$command]
+}
