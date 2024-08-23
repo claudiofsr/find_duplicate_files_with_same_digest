@@ -1,9 +1,8 @@
 use hashbrown::HashMap;
-use once_cell::sync::Lazy;
 use rayon::prelude::*;
 use rust_xlsxwriter::{DocProperties, Format, FormatAlign, Workbook, Worksheet, XlsxSerialize};
 use serde::Serialize;
-use std::path::PathBuf;
+use std::{path::PathBuf, sync::LazyLock};
 
 use crate::MyResult;
 
@@ -120,11 +119,7 @@ where
 }
 
 /// XLSX Formats
-///
-/// Example:
-///
-/// <https://docs.rs/once_cell/latest/once_cell/sync/struct.Lazy.html>
-static XLSX_FORMATS: Lazy<HashMap<&'static str, Format>> = Lazy::new(|| {
+static XLSX_FORMATS: LazyLock<HashMap<&'static str, Format>> = LazyLock::new(|| {
     let fmt_header: Format = Format::new()
         .set_align(FormatAlign::Center) // horizontally
         .set_align(FormatAlign::VerticalCenter)
