@@ -60,11 +60,11 @@ where
     });
 
     // Save the workbook to disk.
-    workbook.save(&path).map_err(|xlsx_error| {
+    workbook.save(&path).inspect_err(|xlsx_error| {
         // Add a custom error message
         eprintln!("fn write_xlsx()");
-        eprintln!("Error: Failed to write XLSX file {:?}", path);
-        xlsx_error
+        eprintln!("Failed to write XLSX file {:?}", path);
+        eprintln!("Error: {xlsx_error}");
     })?;
 
     Ok(())

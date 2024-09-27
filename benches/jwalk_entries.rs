@@ -32,24 +32,22 @@ pub fn process_dir_entries_v1(dir_entry_results: &mut JwalkResults, min_size: u6
 
 pub fn process_dir_entries_v2(dir_entry_results: &mut JwalkResults, min_size: u64, max_size: u64) {
     // 3. Custom skip
-    dir_entry_results
-        .iter_mut()
-        .for_each(|dir_entry_result| {
-            if let Ok(dir_entry) = dir_entry_result {
-                if dir_entry.file_type.is_file() {
-                    if let Ok(metadata) = dir_entry.metadata() {
-                        let file_size: u64 = metadata.len();
-                        //let inode_number: u64 = metadata.ino();
-        
-                        if file_size >= min_size && file_size <= max_size {
-                            let key = Key::new(file_size, None);
-                            let path = dir_entry.path();
-                            dir_entry.client_state = Some(FileInfo { key, path });
-                        }
+    dir_entry_results.iter_mut().for_each(|dir_entry_result| {
+        if let Ok(dir_entry) = dir_entry_result {
+            if dir_entry.file_type.is_file() {
+                if let Ok(metadata) = dir_entry.metadata() {
+                    let file_size: u64 = metadata.len();
+                    //let inode_number: u64 = metadata.ino();
+
+                    if file_size >= min_size && file_size <= max_size {
+                        let key = Key::new(file_size, None);
+                        let path = dir_entry.path();
+                        dir_entry.client_state = Some(FileInfo { key, path });
                     }
                 }
             }
-        });
+        }
+    });
 }
 
 pub fn process_dir_entries_v3(dir_entry_results: &mut JwalkResults, min_size: u64, max_size: u64) {
@@ -57,7 +55,7 @@ pub fn process_dir_entries_v3(dir_entry_results: &mut JwalkResults, min_size: u6
     dir_entry_results
         .iter_mut()
         .flatten() // Result<DirEntry, Error> to DirEntry
-        .filter_map(|dir_entry| 
+        .filter_map(|dir_entry| {
             if dir_entry.file_type().is_file() {
                 dir_entry
                     .metadata()
@@ -66,7 +64,7 @@ pub fn process_dir_entries_v3(dir_entry_results: &mut JwalkResults, min_size: u6
             } else {
                 None
             }
-        )
+        })
         .filter(|(_dir_entry, file_size)| *file_size >= min_size && *file_size <= max_size)
         .for_each(|(dir_entry, file_size)| {
             let key = Key::new(file_size, None);
@@ -78,7 +76,6 @@ pub fn process_dir_entries_v3(dir_entry_results: &mut JwalkResults, min_size: u6
 // https://github.com/Byron/jwalk/blob/main/benches/walk_benchmark.rs
 
 fn benchmark_process_dir_entries(c: &mut Criterion) {
-
     let path = "~";
     let min_size = 0;
     let max_size = 10_000_000;

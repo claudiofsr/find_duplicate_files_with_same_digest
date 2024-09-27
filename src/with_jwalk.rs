@@ -43,7 +43,7 @@ fn process_dir_entries(dir_entry_results: &mut JwalkResults, min_size: u64, max_
     dir_entry_results
         .iter_mut()
         .flatten() // Result<DirEntry, Error> to DirEntry
-        .filter_map(|dir_entry| 
+        .filter_map(|dir_entry| {
             if dir_entry.file_type().is_file() {
                 dir_entry
                     .metadata()
@@ -52,7 +52,7 @@ fn process_dir_entries(dir_entry_results: &mut JwalkResults, min_size: u64, max_
             } else {
                 None
             }
-        )
+        })
         .filter(|(_dir_entry, file_size)| *file_size >= min_size && *file_size <= max_size)
         .for_each(|(dir_entry, file_size)| {
             let key = Key::new(file_size, None);

@@ -68,12 +68,12 @@ where
         .write(false) // This option, when false, will indicate that the file should not be writable if opened.
         .create(false) // No files will be created
         .open(path)
-        .map_err(|error| {
+        .inspect_err(|error| {
             // Add a custom error message
             eprintln!("Failed to open file {path:?}");
             eprintln!("Perhaps some temporary files no longer exist!");
             eprintln!("Or lack of permission to read this file!");
-            error
+            eprintln!("Error: {error}");
         })?;
 
     Ok(file)
